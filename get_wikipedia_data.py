@@ -45,8 +45,9 @@ def define_tables():
         Field('is_month_12', 'boolean', default=False),
     )
 
-    db.define_table('image',
+    db.define_table('images',
         Field('url', unique=True),
+        Field('flower_id', db.flowers),
         Field('taken_date'),
     )
 
@@ -89,18 +90,30 @@ def insert_flower_to_db(flower: Flower):
 
     db.commit()
     print (flower)
+    return id
+
+def insert_image_urls_to_db(images, flower_id):
+    for url in images:
+        try:
+            db.images.insert(url=url, flower_id=flower_id)
+        except sqlite3.IntegrityError:
+            print ("URL {} is allready inserted".format(url))
 
 def handle_wikipage(wikipage):
+    print ("Loading data from portal {}".format(wikipage.title))
     for flower_name in wikipage.links:
         try:
             flower = get_flower_data(flower_name)
         except(wikipedia.exceptions.PageError):
             continue
         try:
-            insert_flower_to_db(flower)
+            flower_id = insert_flower_to_db(flower)
         except sqlite3.IntegrityError:
             print ("Flower {} is allready inserted".format(flower.name))
-            pass
+            flower_id = db(db.flowers.name == flower.name).select().first().id
+
+        insert_image_urls_to_db(flower.images, flower_id)
+
 
 def run_main():
     wikipedia.set_lang('he')
