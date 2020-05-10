@@ -32,14 +32,16 @@ class flowers:
 class pics:
     def GET(self, flower_id):
         template = u"""<html>
+        <title>{title}</title>
         <meta charset="UTF-8">
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
         <style>
             img {{ width: 244; height: 244 }}
-            li {{ list-style: none; border: solid 1px #006; margin: 5px; width: 250; height: 250; float: left}}
+            li {{ list-style: none; border: solid 1px #006; margin: 5px; width: 244; height: 244; padding: 5px; float: left}}
         </style>
         <h1>{title}</h1>
         <ul>{pics}</ul>
+        <p style="clear:both"><a style="clear:both" href="/pics/{next_page}">Next</a></p>
         <script>{script}</script>
 </html>"""
         script = """
@@ -82,7 +84,8 @@ $('li').dblclick(function() {
         for image in db(db.images.flower_id == flower_id).select():
             pics += image_template.format(image.id, image.url)
 
-        template = template.format(title=db.flowers[flower_id].name, pics=pics, script=script)
+        template = template.format(title=db.flowers[flower_id].name, 
+                pics=pics, script=script, next_page=(int(flower_id)+1))
         return template
 
 class del_img:
