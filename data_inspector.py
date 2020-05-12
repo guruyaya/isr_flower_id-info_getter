@@ -31,6 +31,7 @@ class flowers:
 
 class pics:
     def GET(self, flower_id):
+        flower_id = int(flower_id)
         template = u"""<html>
         <title>{title}</title>
         <meta charset="UTF-8">
@@ -39,7 +40,8 @@ class pics:
             img {{ width: 244; height: 244 }}
             li {{ list-style: none; border: solid 1px #006; margin: 5px; width: 244; height: 244; padding: 5px; float: left}}
         </style>
-        <h1>{title}</h1>
+        <h1><a href="https://he.wikipedia.org/wiki/{title}">{title}</a></h1>
+        <p style="clear:both">{next_pages}</p>
         <ul>{pics}</ul>
         <p style="clear:both"><a style="clear:both" href="/pics/{next_page}">Next</a></p>
         <script>{script}</script>
@@ -79,12 +81,14 @@ $('li').dblclick(function() {
     });
 })
 """
+        next_page_template = '<a style="clear:both" href="/pics/{}">{}</a> '
+        next_pages = ''.join( [next_page_template.format(a,a) for a in range (flower_id+1, flower_id + 10)] )
         pics = ''
         image_template = '<li data-id={}><img src="{}" /></li>'
         for image in db(db.images.flower_id == flower_id).select():
             pics += image_template.format(image.id, image.url)
 
-        template = template.format(title=db.flowers[flower_id].name, 
+        template = template.format(title=db.flowers[flower_id].name, next_pages=next_pages,
                 pics=pics, script=script, next_page=(int(flower_id)+1))
         return template
 
