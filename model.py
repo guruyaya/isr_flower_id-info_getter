@@ -20,5 +20,6 @@ def define_tables(db):
     db.define_table('images',
         Field('url', unique=True),
         Field('flower_id', db.flowers),
+        Field('exif_data', 'text'),
         Field('taken_date'),
     )
