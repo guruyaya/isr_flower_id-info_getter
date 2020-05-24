@@ -38,17 +38,17 @@ class pics:
         <style>
             img {{ width: 244; height: 244 }}
             li {{ list-style: none; border: solid 1px #006; margin: 5px; width: 244; height: 244; padding: 5px; float: left}}
-            h1,h2 {{clear: both}}
+            h1,h2,h3 {{clear: both}}
         </style>
         <h1><a href="https://he.wikipedia.org/wiki/{title}">{title}</a></h1>
         <p style="clear:both">{next_pages}</p>
         <h2>OK PICS</h2>
         <ul>{ok_pics}</ul>
 
-        <h2>False Positive</h2>
+        <h2>Wrongly Assigned</h2>
         <ul>{fp_pics}</ul>
 
-        <h2>False Negative</h2>
+        <h2>Wrongly Unassigned</h2>
         <ul>{fn_pics}</ul>
 
         <p style="clear:both"><a style="clear:both" href="/pics/{next_page}">Next</a></p>
@@ -66,15 +66,25 @@ class pics:
 
         fp_pics_query = db((db.images_predicted.real != flower_id) &
                         (db.images_predicted.predicted == flower_id)).select()
+        fp_pics_arranged = fp_pics_query.group_by_value(db.images_predicted.real)
+
         fp_pics = ''
-        for image in fp_pics_query:
-            fp_pics += image_template.format(image.id, image.filename)
+        for wrong_flower_id, images in fp_pics_arranged.items():
+            flower = db.flowers[ wrong_flower_id ]
+            fp_pics += '<h3><a href="/my-pics/{}">{}</h3></a>'.format(flower.id, flower.name)
+            for image in images:
+                fp_pics += image_template.format(image.id, image.filename)
 
         fn_pics_query = db((db.images_predicted.real == flower_id) &
                         (db.images_predicted.predicted != flower_id)).select()
+        fn_pics_arranged = fn_pics_query.group_by_value(db.images_predicted.predicted)
+
         fn_pics = ''
-        for image in fn_pics_query:
-            fn_pics += image_template.format(image.id, image.filename)
+        for wrong_flower_id, images in fn_pics_arranged.items():
+            flower = db.flowers[ wrong_flower_id ]
+            fn_pics += '<h3><a href="/my-pics/{}">{}</h3></a>'.format(flower.id, flower.name)
+            for image in images:
+                fn_pics += image_template.format(image.id, image.filename)
 
         template = template.format(title=db.flowers[flower_id].name, next_pages=next_pages,
                 ok_pics=ok_pics, fp_pics=fp_pics, fn_pics=fn_pics,
