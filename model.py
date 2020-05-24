@@ -23,3 +23,11 @@ def define_tables(db):
         Field('exif_data', 'text'),
         Field('taken_date'),
     )
+
+    db.define_table('images_predicted',
+        Field('image_id', db.images),
+        Field('real', db.flowers),
+        Field('predicted', db.flowers),
+        Field('success', 'boolean'),
+        Field('filename')
+    )
