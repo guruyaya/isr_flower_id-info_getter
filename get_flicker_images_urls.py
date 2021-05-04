@@ -18,16 +18,7 @@ define_tables(db)
 
 flowers = db().select(db.flowers.ALL)
 
-for flower in flowers:
-    print ("Flower name: {}".format(flower.name))
-    num_flowers_left = int(config['flicker']['num_images']) - db(db.images.flower_id == flower.id).count()
-    if num_flowers_left <= 0:
-        print ("Skipping...")
-        continue
-
-    w = flickr_api.Walker(
-            flickr_api.Photo.search, tags=flower.name
-    )
+def run_flicker_walker(w, num_flowers_left):
     for i, photo in enumerate(w):
         try:
             db.images.insert(url=photo['url_m'], flower_id=flower.id)
@@ -41,4 +32,29 @@ for flower in flowers:
                 print ("URL {} is in DB".format(photo['url_n']))
 
         if i > num_flowers_left:
+            db.commit()
             break
+
+for flower in flowers:
+    print ("Flower name: {}".format(flower.name))
+    num_flowers_left = int(config['flicker']['num_images']) - db(db.images.flower_id == flower.id).count()
+    if num_flowers_left <= 0:
+        print ("Skipping...")
+        continue
+
+    w = flickr_api.Walker(
+            flickr_api.Photo.search, tags=flower.name
+    )
+    run_flicker_walker(w, num_flowers_left)
+
+    if flower.eng_name == None:
+        continue
+
+    num_flowers_left = int(config['flicker']['num_images']) - db(db.images.flower_id == flower.id).count()
+    if num_flowers_left <= 0:
+        print ("Skipping...")
+        continue
+
+    w = flickr_api.Walker(
+            flickr_api.Photo.search, tags=flower.eng_name
+    )

@@ -4,4 +4,4 @@
 
 # Steps
 1. run get_wikipedia_data.py
-...
+2. run get_flicker_images_urls.py
