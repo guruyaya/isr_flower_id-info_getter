@@ -15,6 +15,7 @@ def define_tables(db):
         Field('is_month_10', 'boolean', default=False),
         Field('is_month_11', 'boolean', default=False),
         Field('is_month_12', 'boolean', default=False),
+        Field('eng_name', 'string', default=None),
     )
 
     db.define_table('images',

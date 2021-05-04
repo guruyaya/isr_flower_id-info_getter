@@ -32,10 +32,11 @@ db = DAL('sqlite://flower_storage.db', folder='./data')
 define_tables(db)
 
 class Flower():
-    def __init__(self, name: str, active_months: List[int], images: List[str]):
+    def __init__(self, name: str, active_months: List[int], images: List[str], eng_name: str = None):
         self.name = name
         self.active_months = active_months
         self.images = images
+        self.eng_name = eng_name
 
     def __str__(self):
         return "Flower('{}', \"{}\")".format(self.name, self.active_months)
@@ -43,30 +44,38 @@ class Flower():
 def get_flower_data(flower_name: str) -> Flower:
     flower = wikipedia.page(flower_name)
     name = flower.title
+
+    eng_name = None
+    other_languages = flower.other_languages()
+    if 'en' in other_languages:
+        eng_name = other_languages['en']
+
     page_html = flower.html()
     active_months = [int(i) for i in month_re.findall(page_html)]
     if len(active_months) == 0:
         active_months = list(range(1, 13)) # set as good for all months
     images = ([image for image in flower.images if not image.lower().endswith('.svg')])
 
-    return Flower(name, active_months, images)
+    return Flower(name, active_months, images, eng_name)
 
 def insert_flower_to_db(flower: Flower):
     ''' Inserts a flower record into the DB
     '''
+
     id = db.flowers.insert(name=flower.name,
-                        is_month_1=1 in flower.active_months,
-                        is_month_2=2 in flower.active_months,
-                        is_month_3=3 in flower.active_months,
-                        is_month_4=4 in flower.active_months,
-                        is_month_5=5 in flower.active_months,
-                        is_month_6=6 in flower.active_months,
-                        is_month_7=7 in flower.active_months,
-                        is_month_8=8 in flower.active_months,
-                        is_month_9=9 in flower.active_months,
-                        is_month_10=10 in flower.active_months,
-                        is_month_11=11 in flower.active_months,
-                        is_month_12=12 in flower.active_months)
+            is_month_1=1 in flower.active_months,
+            is_month_2=2 in flower.active_months,
+            is_month_3=3 in flower.active_months,
+            is_month_4=4 in flower.active_months,
+            is_month_5=5 in flower.active_months,
+            is_month_6=6 in flower.active_months,
+            is_month_7=7 in flower.active_months,
+            is_month_8=8 in flower.active_months,
+            is_month_9=9 in flower.active_months,
+            is_month_10=10 in flower.active_months,
+            is_month_11=11 in flower.active_months,
+            is_month_12=12 in flower.active_months,
+            eng_name=flower.eng_name)
 
     db.commit()
     print (flower)
@@ -94,10 +103,8 @@ def handle_wikipage(wikipage):
 
         insert_image_urls_to_db(flower.images, flower_id)
 
-
 def run_main():
     wikipedia.set_lang('he')
-    define_tables()
 
     # get flower data from WIKIPEDIA
     for page in WIKI_MAIN_LINKS:
