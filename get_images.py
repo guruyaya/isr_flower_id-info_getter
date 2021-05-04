@@ -19,6 +19,8 @@ def mkdir(dir_name):
         os.mkdir(dir_name)
 
 def get_file(url, dir_name, file_name, skip_count):
+    if not os.path.isdir(dir_name):
+        os.mkdir(dir_name)
     full_path = '{}/{}'.format(dir_name, file_name)
     if (os.path.exists(full_path)):
         if skip_count % 300 == 0:
