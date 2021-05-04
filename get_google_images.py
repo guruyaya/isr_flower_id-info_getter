@@ -30,31 +30,45 @@ def get_image_links(driver, search_term, count=50):
     return ([link[0] for link in links])[:count]
 
 
+def get_flowers_by_name(flowers, name_col='name'):
+    try:
+        driver = webdriver.Firefox()
+        for flower in flowers:
+            print ("Flower name: {}".format(flower.flowers[name_col]))
+            flower_count = flower[ db.images.id.count() ]
+
+            if flower_count >= max_flowers:
+                print ("Skipping...")
+                continue
+            links = get_image_links(driver, flower.flowers[name_col], count=max_flowers-flower_count)
+            for link in links:
+                try:
+                    db.images.insert(url=link, flower_id=flower.flowers.id)
+                except sqlite3.IntegrityError:
+                    print ("URL {} allready in db".format(link))
+                db.commit()
+    finally:
+        time.sleep(5)
+        driver.close()
+        db.close()
+
+max_flowers = int(config['google']['num_images'])
+
+
+
+# Eng Names
+flowers = db(db.flowers.eng_name != None).select(
+    db.flowers.id, db.flowers.eng_name, db.images.id.count(),
+                    groupby=db.images.flower_id,
+                    left=db.images.on(db.images.flower_id == db.flowers.id),
+                    having=(db.images.id.count() < 50)
+)
+get_flowers_by_name(flowers, 'eng_name')
+
+# Hebrew Names
 flowers = db().select(db.flowers.id, db.flowers.name, db.images.id.count(),
                     groupby=db.images.flower_id,
                     left=db.images.on(db.images.flower_id == db.flowers.id),
                     having=(db.images.id.count() < 50)
 )
-
-max_flowers = int(config['google']['num_images'])
-
-try:
-    driver = webdriver.Firefox()
-    for flower in flowers:
-        print ("Flower name: {}".format(flower.flowers.name))
-        flower_count = flower[ db.images.id.count() ]
-
-        if flower_count >= max_flowers:
-            print ("Skipping...")
-            continue
-        links = get_image_links(driver, flower.flowers.name, count=max_flowers-flower_count)
-        for link in links:
-            try:
-                db.images.insert(url=link, flower_id=flower.flowers.id)
-            except sqlite3.IntegrityError:
-                print ("URL {} allready in db".format(link))
-            db.commit()
-finally:
-    time.sleep(5)
-    driver.close()
-    db.close()
+get_flowers_by_name(flowers, 'name')

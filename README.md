@@ -5,3 +5,5 @@
 # Steps
 1. run get_wikipedia_data.py
 2. run get_flicker_images_urls.py
+3. Download geckodriver for your system
+4. run get_google_images.py
