@@ -27,6 +27,7 @@ def get_image_links(driver, search_term, count=50):
     driver.get(gogole_link)
     source = driver.page_source
     links = re_links.findall(source)
+    time.sleep(1)
     return ([link[0] for link in links])[:count]
 
 

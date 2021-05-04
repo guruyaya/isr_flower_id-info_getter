@@ -7,7 +7,8 @@
 2. run get_wikipedia_data.py
 3. run get_flicker_images_urls.py
 4. Download geckodriver for your system
-5. run get_google_images.py
+5. run get_google_images.py. At some point you'll have to proove you are not a robot. As you are,
+there's little you can do. Baaa
 6. use get_images.py to download images
 
 
