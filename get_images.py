@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from urllib.request import urlopen, Request
 import urllib
+from http.client import InvalidURL
 
 from pydal import DAL
 import os, sys
@@ -40,8 +41,12 @@ def get_file(url, dir_name, file_name, skip_count):
     )
 
     with urlopen(req) as response, open(full_path, 'wb') as out_file:
-        data = response.read() # a `bytes` object
-        out_file.write(data)
+        try:
+            data = response.read() # a `bytes` object
+        except http.client.IncompleteRead:
+            pass
+        else:
+            out_file.write(data)
     return skip_count
 
 def main():
@@ -54,9 +59,11 @@ def main():
         try:
             skip_count = get_file(image.url, dir_name, file_name, skip_count)
         except urllib.error.URLError:
-            print ("SSL ERR")
+            print (f"{image.url} - URL / SSL ERR")
         except ConnectionResetError:
-            print ("RESET ERR")
-
+            print (f"{image.url} - RESET ERR")
+        except InvalidURL:
+            print (f"{image.url} - Invalid URL")
+            
 if __name__ == '__main__':
     main()
