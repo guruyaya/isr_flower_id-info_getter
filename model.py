@@ -21,6 +21,9 @@ def define_tables(db):
     db.define_table('images',
         Field('url', unique=True),
         Field('flower_id', db.flowers),
+        Field('is_live', 'boolean', default=True),
+        Field('is_non_flower','boolean', default=None),
+        Field('local_filename'),
         Field('exif_data', 'text'),
         Field('taken_date'),
     )

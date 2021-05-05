@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flower vs Noneflower</title>
+</head>
+<style>
+    img {
+        width: 200px;
+        height: 200px;
+    }
+    #img_list li {
+        list-style: none;
+        padding: 5px;
+        margin: 5px;
+        float: left;
+    }
+    #img_list li:hover {
+        background-color: yellow;
+    }
+    #img_list li.not_loaded {
+        border: solid 2px #aaa;
+    }
+    #img_list li.flower {
+        border: solid 2px rgb(44, 252, 44);
+    }
+    #img_list li.non_flower {
+        border: solid 2px red;
+    }
+    #is_isnt_flower {
+        width: 200px;
+        display: block;
+        border: solid 1px green;
+        background-color: #CCFFCC;
+        margin: auto;
+        text-align: center;
+        text-decoration: none;
+    }
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+
+$(document).on('click', 'ul#img_list li', function(){
+    $this = $(this);
+    if ($this.hasClass('not_loaded')){
+        var img = $(this).children('url');
+        img.attr('src', img.attr('src'));
+        return
+    }
+    if ($this.hasClass('flower')) {
+        $this.removeClass('flower').addClass('non_flower');
+    }else{
+        $this.removeClass('non_flower').addClass('flower');
+    }
+});
+var get_images = function() {
+    $.ajax({
+        'url': '/get_images',
+        success: function(data) {
+            var $ul = $('ul#img_list');
+            $ul.html('');
+
+            for (var i in data.images){
+                var image = data.images[i];
+                var $img = $('<img />').attr('src', image.url);
+                $img.on('load', function(){
+                    var isLoaded = this.complete && this.naturalHeight !== 0;
+                    if (isLoaded) {
+                        this.parentNode.classList = ['flower']
+                    }
+                });
+                var $li = $('<li></li>').
+                    attr('class', 'not_loaded').
+                    data('id', image.id).
+                    append($img);
+                $ul.append($li);
+            }
+        }
+    });
+}
+$(document).on('click', '#is_isnt_flower', function() {
+    var post_data = [];
+    $('ul#img_list li').each(function() {
+        post_data.push({
+            'target': this.classList[0],
+            'id': $(this).data('id')
+        });
+    });
+
+    $.ajax({
+        'method': 'POST',
+        'url': '/update_image_data',
+        'data': JSON.stringify(post_data),
+        'success': get_images
+    })
+});
+</script>
+<body>
+    <ul id="img_list">
+    </ul>
+    <div style="clear: both;"></div>
+    <div id="controls">
+        <a id="is_isnt_flower" href="javascript:void(0)">Submit status</a>
+    </div>
+</body>
+<script>
+
+get_images();
+</script>
+</html>
