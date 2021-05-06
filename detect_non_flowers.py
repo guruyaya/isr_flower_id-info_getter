@@ -32,7 +32,7 @@ class get_images:
         web.header('Content-Type', 'text/json')
         images = db(
             (db.images.is_live == True) & (db.images.is_non_flower == None)
-        ).select(db.images.id, db.images.url, limitby=(0, 10))
+        ).select(db.images.id, db.images.url, limitby=(0, 50))
         return json.dumps({'images': images.as_list()})
 if __name__ == "__main__":
     app.run()
