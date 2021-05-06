@@ -54,7 +54,7 @@ def main():
     ext_re = re.compile('\.([A-Za-z0-9]*)$')
     for image in db(db.images.is_non_flower != None).select():
         ext = ext_re.findall(image.url)[0]
-        dir_name = '{}/{}'.format(base_dir, int(not image.is_non_flower))
+        dir_name = '{}/{}'.format(base_dir, int(image.is_non_flower))
         file_name = '{}.{}'.format(image.id, ext)
         try:
             skip_count = get_file(image.url, dir_name, file_name, skip_count)
