@@ -11,7 +11,11 @@
 there's little you can do. Baaa
 6. Mark non_flower (faraway pics or just non flower pics) and dead images using detect_non_flowers.py (Use 1000 examples)
 7. use is_non_flower_test_split.py to build a flower identifier
-8. Use build_flower_detection_model.py
+8. use get_images_for_is_flower.py
+9. Use build_flower_detection_model.py
+10. Use is_non_flower_test_split with option FP and FN (False positive and False negatives) changed in the file to examine the results of the model. This should catch falsly claimed non and not non flowers
+11. Delete the data/image_is_flower directory
+12. repeat starting from stage 8, until the is_non_flower model predicts well
 9. use get_images.py to download images
 
 

@@ -23,6 +23,7 @@ def define_tables(db):
         Field('flower_id', db.flowers),
         Field('is_live', 'boolean', default=True),
         Field('is_non_flower','boolean', default=None),
+        Field('is_non_flower_model_prediction','boolean', default=None),
         Field('local_filename'),
         Field('exif_data', 'text'),
         Field('taken_date'),

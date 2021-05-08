@@ -69,6 +69,9 @@ var get_images = function() {
                     var isLoaded = this.complete && this.naturalHeight !== 0;
                     if (isLoaded) {
                         this.parentNode.classList = ['flower']
+                        if (image.is_non_flower == true){
+                            this.parentNode.classList = ['non_flower']
+                        }
                     }
                 });
                 var $li = $('<li></li>').
