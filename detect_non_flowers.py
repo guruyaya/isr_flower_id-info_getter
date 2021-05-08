@@ -14,7 +14,7 @@ OPTION_FN = 3
 start_from = 0
 num_images = 50
 
-run_option = OPTION_FN
+run_option = OPTION_INIT
 
 
 urls = (
