@@ -9,7 +9,9 @@
 4. Download geckodriver for your system
 5. run get_google_images.py. At some point you'll have to proove you are not a robot. As you are,
 there's little you can do. Baaa
-6. Mark non_flower and dead images using detect_non_flowers.py
-7. use get_images.py to download images
+6. Mark non_flower (faraway pics or just non flower pics) and dead images using detect_non_flowers.py (Use 1000 examples)
+7. use is_non_flower_test_split.py to build a flower identifier
+8. Use build_flower_detection_model.py
+9. use get_images.py to download images
 
 
