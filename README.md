@@ -20,5 +20,7 @@ there's little you can do. Baaa
 7. Delete the data/image_is_flower directory
 8. repeat starting from stage 8, until the is_non_flower model predicts well
 ## Build a flower identifier model
-1. use get_images.py to download images
+1. mkdir data/images
+2. use get_images.py to download images
+3. use apply_non_flower_model.py to separate all non flower images, and those we cannot load
 
